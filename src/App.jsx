@@ -9,6 +9,7 @@ import BookAppointment from './pages/BookAppointment';
 import CounselorProfile from './pages/CounselorProfile';
 import SessionNotes from './pages/SessionNotes';
 import ProtectedRoute from './components/ProtectedRoute';
+import ChatPage from './pages/ChatPage';       
 
 function App() {
   return (
@@ -18,19 +19,27 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+
         <Route path="/client-dashboard" element={
           <ProtectedRoute role="client"><ClientDashboard /></ProtectedRoute>
         } />
+
         <Route path="/counselor-dashboard" element={
           <ProtectedRoute role="counselor"><CounselorDashboard /></ProtectedRoute>
         } />
+
         <Route path="/book/:counselorId" element={
           <ProtectedRoute role="client"><BookAppointment /></ProtectedRoute>
         } />
+
         <Route path="/counselor/:id" element={<CounselorProfile />} />
         <Route path="/session-notes/:appointmentId" element={
           <ProtectedRoute role="counselor"><SessionNotes /></ProtectedRoute>
         } />
+        <Route path="/chat/:appointmentId" element={
+          <ProtectedRoute><ChatPage /></ProtectedRoute>
+        } />
+
       </Routes>
     </BrowserRouter>
   );

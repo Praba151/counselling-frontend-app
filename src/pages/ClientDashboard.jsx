@@ -47,13 +47,21 @@ const ClientDashboard = () => {
               <p style={{ margin: '4px 0', fontSize: '14px' }}>
                 Payment: <span style={{ fontWeight: 'bold' }}>{appt.paymentStatus}</span>
               </p>
-              {appt.status === 'confirmed' && appt.videoRoomUrl && (
-                <a href={appt.videoRoomUrl} target="_blank" rel="noreferrer">
-                  <button style={{
-                    marginTop: '10px', padding: '8px 20px', backgroundColor: '#38A169',
-                    color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'
-                  }}>Join Video Call</button>
-                </a>
+              {appt.status === 'confirmed' && (
+                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginTop: '10px' }}>
+                  <button
+                  onClick={() => navigate(`/chat/${appt._id}`)}
+                  style={{ padding: '8px 16px', backgroundColor: '#3182CE', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+                    Chat
+                  </button>
+                  {appt.videoRoomUrl && (
+                    <a href={appt.videoRoomUrl} target="_blank" rel="noreferrer">
+                      <button style={{ padding: '8px 16px', backgroundColor: '#38A169', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+                        Join Video Call
+                      </button>
+                    </a>
+                  )}
+                </div>
               )}
             </div>
           ))}
