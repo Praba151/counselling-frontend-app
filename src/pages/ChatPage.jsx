@@ -53,7 +53,7 @@ const ChatPage = () => {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', fontFamily: 'Arial', background: '#f4f6f8' }}>
-      {/* Header */}
+
       <div style={{ background: '#2C7A7B', color: 'white', padding: '16px 24px', display: 'flex', alignItems: 'center', gap: '12px' }}>
         <button onClick={() => window.history.back()}
           style={{ background: 'transparent', border: '1px solid rgba(255,255,255,0.5)', color: 'white', borderRadius: '6px', padding: '6px 12px', cursor: 'pointer' }}>
@@ -63,7 +63,7 @@ const ChatPage = () => {
         <span style={{ fontSize: '13px', opacity: 0.8 }}>Room: {appointmentId?.slice(-6)}</span>
       </div>
 
-      {/* Messages */}
+  
       <div style={{ flex: 1, overflowY: 'auto', padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: '#aaa', marginTop: '60px' }}>

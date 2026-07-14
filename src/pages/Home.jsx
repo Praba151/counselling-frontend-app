@@ -40,7 +40,7 @@ const Home = () => {
   return (
     <div style={{ fontFamily: 'Arial, sans-serif', minHeight: '100vh', backgroundColor: '#f7f9fc' }}>
       <div style={{ background: 'linear-gradient(135deg, #2C7A7B, #1a4a6e)', color: 'white', padding: '60px 30px', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '12px' }}>Find Your Counselor 🧠</h1>
+        <h1 style={{ fontSize: '36px', fontWeight: 'bold', marginBottom: '12px' }}>Find Your Counselor </h1>
         <p style={{ fontSize: '17px', opacity: 0.88, maxWidth: '550px', margin: '0 auto' }}>
           Connect with licensed counselors for mental health, relationships, career & more. First session from ₹299.
         </p>

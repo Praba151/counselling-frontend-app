@@ -18,7 +18,7 @@ const Navbar = () => {
       position: 'sticky', top: 0, zIndex: 1000, flexWrap: 'wrap', gap: '10px'
     }}>
       <Link to="/" style={{ color: 'white', textDecoration: 'none', fontWeight: 'bold', fontSize: '20px' }}>
-        MindBridge
+        Conselling for students 
       </Link>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
