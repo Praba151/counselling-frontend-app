@@ -30,7 +30,7 @@ const CounselorDashboard = () => {
       alert('Profile saved! ');
       setShowProfileForm(false);
     } catch (err) {
-      alert('Error saving profile',err);
+      alert('Error saving profile: ' + (err.response?.data?.message || err.message));
     }
   };
 
@@ -59,7 +59,7 @@ const CounselorDashboard = () => {
             padding: '10px 20px', backgroundColor: '#2C7A7B',
             color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'
           }}>
-            {showProfileForm ? 'Hide Profile Form' : '✏️ Edit My Profile'}
+            {showProfileForm ? 'Hide Profile Form' : ' Edit My Profile'}
           </button>
         </div>
       </div>
