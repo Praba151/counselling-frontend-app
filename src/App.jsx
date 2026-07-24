@@ -9,7 +9,9 @@ import BookAppointment from './pages/BookAppointment';
 import CounselorProfile from './pages/CounselorProfile';
 import SessionNotes from './pages/SessionNotes';
 import ProtectedRoute from './components/ProtectedRoute';
-import ChatPage from './pages/ChatPage';       
+import ChatPage from './pages/ChatPage';
+import ClientRecords from './pages/ClientRecords';
+import EditProfile from './pages/EditProfile';
 
 function App() {
   return (
@@ -38,6 +40,14 @@ function App() {
         } />
         <Route path="/chat/:appointmentId" element={
           <ProtectedRoute><ChatPage /></ProtectedRoute>
+        } />
+
+        <Route path="/client-records" element={
+          <ProtectedRoute role="counselor"><ClientRecords /></ProtectedRoute>
+        } />
+
+        <Route path="/profile" element={
+          <ProtectedRoute><EditProfile /></ProtectedRoute>
         } />
 
       </Routes>
