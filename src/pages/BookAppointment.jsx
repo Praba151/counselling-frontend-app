@@ -3,32 +3,38 @@ import { useParams, useNavigate } from 'react-router-dom';
 import API from '../utils/api';
 
 const BookAppointment = () => {
-  const { counselorId } = useParams();
+  const { id } = useParams();                    
   const [profile, setProfile] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [sessionType, setSessionType] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get(`/counselors/${counselorId}`).then(res => {
+    if (!id) return;
+
+    API.get(`/counselors/${id}`).then(res => {   
       setProfile(res.data);
-      if (res.data?.sessionTypes?.length > 0) setSessionType(res.data.sessionTypes[0]);
+      if (res.data?.sessionTypes?.length > 0) {
+        setSessionType(res.data.sessionTypes[0]);
+      }
     });
-  }, [counselorId]);
+  }, [id]);
 
   const handleBook = async () => {
     if (!selectedSlot) return alert('Please select a time slot');
     try {
       const res = await API.post('/appointments/book', {
-        counselorId,
+        counselorId: id,                         
         date: selectedSlot.date,
         time: selectedSlot.time,
         sessionType
       });
+
       const orderRes = await API.post('/payment/create-order', {
         appointmentId: res.data._id,
         amount: profile.pricePerSession
       });
+
       const options = {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderRes.data.amount,
@@ -43,7 +49,7 @@ const BookAppointment = () => {
             razorpaySignature: response.razorpay_signature,
             appointmentId: res.data._id
           });
-          alert(' Booking confirmed and payment successful!');
+          alert('Booking confirmed and payment successful!');
           navigate('/client-dashboard');
         },
         prefill: { name: 'Client', email: 'client@example.com' },
@@ -67,8 +73,18 @@ const BookAppointment = () => {
 
       <div style={{ marginTop: '20px' }}>
         <label style={{ fontWeight: 'bold' }}>Select Session Type:</label>
-        <select value={sessionType} onChange={e => setSessionType(e.target.value)}
-          style={{ display: 'block', marginTop: '8px', padding: '10px', width: '100%', borderRadius: '6px', border: '1px solid #ccc' }}>
+        <select
+          value={sessionType}
+          onChange={e => setSessionType(e.target.value)}
+          style={{
+            display: 'block',
+            marginTop: '8px',
+            padding: '10px',
+            width: '100%',
+            borderRadius: '6px',
+            border: '1px solid #ccc'
+          }}
+        >
           {profile.sessionTypes?.map(type => (
             <option key={type} value={type}>{type}</option>
           ))}
@@ -79,26 +95,39 @@ const BookAppointment = () => {
         <label style={{ fontWeight: 'bold' }}>Select Available Slot:</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
           {profile.availableSlots?.filter(s => !s.isBooked).map((slot, i) => (
-            <button key={i}
+            <button
+              key={i}
               onClick={() => setSelectedSlot(slot)}
               style={{
-                padding: '10px 16px', borderRadius: '6px', cursor: 'pointer',
+                padding: '10px 16px',
+                borderRadius: '6px',
+                cursor: 'pointer',
                 backgroundColor: selectedSlot === slot ? '#2C7A7B' : 'white',
                 color: selectedSlot === slot ? 'white' : '#333',
                 border: '1px solid #2C7A7B'
-              }}>
+              }}
+            >
               {slot.date} {slot.time}
             </button>
           ))}
         </div>
       </div>
 
-      <button onClick={handleBook} style={{
-        marginTop: '30px', padding: '12px 30px', backgroundColor: '#2C7A7B',
-        color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer',
-        fontSize: '16px', width: '100%'
-      }}>
-        💳 Book & Pay ₹{profile.pricePerSession}
+      <button
+        onClick={handleBook}
+        style={{
+          marginTop: '30px',
+          padding: '12px 30px',
+          backgroundColor: '#2C7A7B',
+          color: 'white',
+          border: 'none',
+          borderRadius: '6px',
+          cursor: 'pointer',
+          fontSize: '16px',
+          width: '100%'
+        }}
+      >
+         Book & Pay ₹{profile.pricePerSession}
       </button>
     </div>
   );
