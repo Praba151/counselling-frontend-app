@@ -30,7 +30,7 @@ function App() {
           <ProtectedRoute role="counselor"><CounselorDashboard /></ProtectedRoute>
         } />
 
-        <Route path="/book/:counselorId" element={
+        <Route path="/book/:id" element={
           <ProtectedRoute role="client"><BookAppointment /></ProtectedRoute>
         } />
 
