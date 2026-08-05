@@ -18,7 +18,6 @@ const ChatPage = () => {
   const bottomRef = useRef(null);
 
   useEffect(() => {
-    // Load saved chat history first so it survives refresh
     API.get(`/chat/${appointmentId}`).then(res => {
       const history = res.data.map(m => ({
         roomId: appointmentId,

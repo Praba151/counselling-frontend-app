@@ -4,13 +4,17 @@ import API from '../utils/api';
 
 const Home = () => {
   const [counselors, setCounselors] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
 
   useEffect(() => {
-    API.get('/counselors').then(res =>{
+    API.get('/counselors')
+      .then(res => {
         console.log(res.data);
-         setCounselors(res.data)})
-         .catch(() => {});
+        setCounselors(res.data);
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false)); 
   }, []);
 
   return (
@@ -21,19 +25,45 @@ const Home = () => {
       </div>
 
       <h2 style={{ color: '#333', marginBottom: '20px' }}>Our Counselors</h2>
-      
-      {counselors.length === 0 ? (
+
+      {loading ? (
+        <p style={{ color: '#888' }}>Loading counselors...</p>
+      ) : counselors.length === 0 ? (
         <p style={{ color: '#888' }}>No counselors available yet.</p>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
           {counselors.map((profile) => (
             <div key={profile._id} style={{
               border: '1px solid #ddd', borderRadius: '10px',
-              padding: '20px', backgroundColor: '#f9f9f9'
+              padding: '20px', backgroundColor: '#f9f9f9',
+              overflow: 'hidden',          
+              wordWrap: 'break-word',   
+              overflowWrap: 'break-word'
             }}>
-              <h3 style={{ color: '#2C7A7B' }}>{profile.userId?.name}</h3>
-              <p style={{ color: '#555', fontSize: '14px' }}>{profile.bio || 'No bio yet'}</p>
-              <p style={{ fontSize: '13px' }}>
+              <h3 style={{
+                color: '#2C7A7B',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'         
+              }}>
+                {profile.userId?.name}
+              </h3>
+              <p style={{
+                color: '#555', fontSize: '14px',
+                display: '-webkit-box',
+                WebkitLineClamp: 3,           
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis'
+              }}>
+                {profile.bio || 'No bio yet'}
+              </p>
+              <p style={{
+                fontSize: '13px',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap'          
+              }}>
                 <strong>Services:</strong> {profile.sessionTypes?.join(', ') || 'N/A'}
               </p>
               <p style={{ fontSize: '13px', color: '#2C7A7B', fontWeight: 'bold' }}>
