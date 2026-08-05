@@ -13,15 +13,38 @@ const CounselorProfile = () => {
 
   if (!profile) return <p style={{ padding: '30px' }}>Loading...</p>;
 
+  const cleanList = (arr) => {
+    if (!arr || arr.length === 0) return '';
+    return [...new Set(arr.map(item => item.trim()))].join(', ');
+  };
+
   return (
     <div style={{ padding: '30px', fontFamily: 'Arial', maxWidth: '600px', margin: '0 auto' }}>
-      <h2 style={{ color: '#2C7A7B' }}>{profile.userId?.name}</h2>
-      <p style={{ color: '#555' }}>{profile.bio}</p>
-      
+      <h2 style={{
+        color: '#2C7A7B',
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word'
+      }}>
+        {profile.userId?.name}
+      </h2>
+      <p style={{
+        color: '#555',
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word'
+      }}>
+        {profile.bio}
+      </p>
+
       <div style={{ marginTop: '20px' }}>
-        <p><strong>Expertise:</strong> {profile.expertise?.join(', ')}</p>
-        <p><strong>Services:</strong> {profile.sessionTypes?.join(', ')}</p>
-        <p style={{ color: '#2C7A7B', fontSize: '18px' }}><strong>₹{profile.pricePerSession}</strong> / session</p>
+        <p style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          <strong>Expertise:</strong> {cleanList(profile.expertise)}
+        </p>
+        <p style={{ wordBreak: 'break-word', overflowWrap: 'break-word' }}>
+          <strong>Services:</strong> {cleanList(profile.sessionTypes)}
+        </p>
+        <p style={{ color: '#2C7A7B', fontSize: '18px' }}>
+          <strong>₹{profile.pricePerSession}</strong> / session
+        </p>
       </div>
 
       <button onClick={() => navigate(`/book/${id}`)} style={{

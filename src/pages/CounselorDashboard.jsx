@@ -108,33 +108,48 @@ const CounselorDashboard = () => {
                   border: 'none', borderRadius: '6px', cursor: 'pointer'
                 }}> Cancel</button>
               )}
-              {appt.status === 'confirmed' && appt.videoRoomUrl && (
+
+              {appt.videoRoomUrl ? (
                 <a href={appt.videoRoomUrl} target="_blank" rel="noreferrer">
-                  <button style={{ padding: '8px 16px', backgroundColor: '#3182CE', color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer' }}>
+                  <button style={{
+                    padding: '8px 16px', backgroundColor: '#3182CE', color: 'white',
+                    border: 'none', borderRadius: '6px', cursor: 'pointer'
+                  }}>
                     🎥 Join Call
                   </button>
                 </a>
+              ) : (
+                <button
+                  disabled
+                  title="Video call link not set up yet"
+                  style={{
+                    padding: '8px 16px', backgroundColor: '#a0aec0', color: 'white',
+                    border: 'none', borderRadius: '6px', cursor: 'not-allowed'
+                  }}
+                >
+                  🎥 Join Call
+                </button>
               )}
+
               <button onClick={() => navigate(`/session-notes/${appt._id}`)} style={{
                 padding: '8px 16px', backgroundColor: '#805AD5', color: 'white',
                 border: 'none', borderRadius: '6px', cursor: 'pointer'
               }}>📝 Session Notes</button>
-              {appt.status === 'confirmed' && (
-                <button onClick={() => navigate(`/chat/${appt._id}`)} style={{
-                  padding: '8px 16px', backgroundColor: '#3182CE', color: 'white',
-                  border: 'none', borderRadius: '6px', cursor: 'pointer'
-                }}>💬 Chat</button>
-              )}
+
+              <button onClick={() => navigate(`/chat/${appt._id}`)} style={{
+                padding: '8px 16px', backgroundColor: '#3182CE', color: 'white',
+                border: 'none', borderRadius: '6px', cursor: 'pointer'
+              }}>💬 Chat</button>
             </div>
           </div>
         ))
       )}
       {activeCallUrl && (
         <VideoCall
-        roomUrl={activeCallUrl}
-        onLeave={() => setActiveCallUrl(null)}
+          roomUrl={activeCallUrl}
+          onLeave={() => setActiveCallUrl(null)}
         />
-        )}
+      )}
     </div>
   );
 };
