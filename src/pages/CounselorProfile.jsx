@@ -5,26 +5,36 @@ import API from '../utils/api';
 const CounselorProfile = () => {
   const { id } = useParams();
   const [profile, setProfile] = useState(null);
-  const [appointment, setAppointment] = useState(null); // Tracks existing session if any
+  const [appointment, setAppointment] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Fetch counselor details
-    API.get(`/counselors/${id}`).then(res => setProfile(res.data));
+  
+    API.get(`/counselors/${id}`)
+      .then(res => setProfile(res.data))
+      .catch(err => console.error("Error fetching counselor profile:", err));
 
-    // Optional: Fetch client's appointments to check if a active booking exists with this counselor
     API.get('/appointments/mine')
       .then(res => {
-        const existing = res.data.find(appt => appt.counselorId?._id === id || appt.counselorId === id);
-        if (existing) setAppointment(existing);
+        const existing = res.data.find(appt => {
+
+          const cId = appt.counselorId?._id?.toString() || appt.counselorId?.toString();
+          const userId = appt.counselorId?.userId?._id?.toString() || appt.counselorId?.userId?.toString();
+          
+          return cId === id || userId === id;
+        });
+
+        if (existing) {
+          setAppointment(existing);
+        }
       })
-      .catch(err => console.log('No appointment found or unauthenticated', err));
+      .catch(err => console.error('Appointment fetch failed:', err));
   }, [id]);
 
   if (!profile) return <p style={{ padding: '30px' }}>Loading...</p>;
 
   const cleanList = (arr) => {
-    if (!arr || arr.length === 0) return '';
+    if (!arr || !Array.isArray(arr) || arr.length === 0) return '';
     return [...new Set(arr.map(item => item.trim()))].join(', ');
   };
 
@@ -49,7 +59,6 @@ const CounselorProfile = () => {
         </p>
       </div>
 
-      {/* Action Buttons Section */}
       <div style={{ marginTop: '20px', display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
         <button 
           onClick={() => navigate(`/book/${id}`)} 
@@ -61,7 +70,6 @@ const CounselorProfile = () => {
           Book a Session
         </button>
 
-        {/* Render Chat & Video Call buttons if an active appointment exists */}
         {appointment && (
           <>
             <button
@@ -80,7 +88,7 @@ const CounselorProfile = () => {
                   padding: '12px 20px', backgroundColor: '#38A169', color: 'white',
                   border: 'none', borderRadius: '6px', cursor: 'pointer', fontSize: '16px'
                 }}>
-                   Join Video Call
+                  Join Video Call
                 </button>
               </a>
             ) : (
@@ -92,7 +100,7 @@ const CounselorProfile = () => {
                   border: 'none', borderRadius: '6px', cursor: 'not-allowed', fontSize: '16px'
                 }}
               >
-                 Join Video Call
+                Join Video Call
               </button>
             )}
           </>
