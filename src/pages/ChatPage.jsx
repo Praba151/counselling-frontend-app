@@ -53,7 +53,7 @@ const ChatPage = () => {
       time: new Date().toLocaleTimeString(),
     };
     socketRef.current.emit('send_message', msgData);
-    setMessages((prev) => [...prev, msgData]);
+    
     setInput('');
   };
 

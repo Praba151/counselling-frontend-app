@@ -11,19 +11,20 @@ const CounselorProfile = () => {
   useEffect(() => {
   
     API.get(`/counselors/${id}`)
-      .then(res => setProfile(res.data))
+      .then(res => {
+        setProfile(res.data)
+      })
       .catch(err => console.error("Error fetching counselor profile:", err));
 
     API.get('/appointments/mine')
       .then(res => {
         const existing = res.data.find(appt => {
-
           const cId = appt.counselorId?._id?.toString() || appt.counselorId?.toString();
           const userId = appt.counselorId?.userId?._id?.toString() || appt.counselorId?.userId?.toString();
           
           return cId === id || userId === id;
         });
-
+        
         if (existing) {
           setAppointment(existing);
         }
