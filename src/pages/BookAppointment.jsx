@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../utils/api';
+import { useAuth } from '../context/AuthContext';
 
 const BookAppointment = () => {
   const { id } = useParams();                    
   const [profile, setProfile] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [sessionType, setSessionType] = useState('');
-  const [isBooking, setIsBooking] = useState(false); 
+  const [isBooking, setIsBooking] = useState(false);
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,9 +25,10 @@ const BookAppointment = () => {
 
   const handleBook = async () => {
     if (!selectedSlot) return alert('Please select a time slot');
-    if (isBooking) return; 
+    if (!sessionType) return alert('This counselor has not set up session types yet. Booking is unavailable.');
+    if (isBooking) return;
 
-    setIsBooking(true); 
+    setIsBooking(true);
 
     try {
       const res = await API.post('/appointments/book', {
@@ -62,7 +65,11 @@ const BookAppointment = () => {
             setIsBooking(false);
           }
         },
-        prefill: { name: 'Client', email: 'client@example.com' },
+        prefill: {
+          name: user?.name || '',
+          email: user?.email || '',
+          contact: user?.phone || ''
+        },
         theme: { color: '#2C7A7B' }
       };
 
@@ -70,11 +77,13 @@ const BookAppointment = () => {
       rzp.open();
     } catch (err) {
       alert('Booking failed: ' + (err.response?.data?.message || err.message));
-      setIsBooking(false); 
+      setIsBooking(false);
     }
   };
 
   if (!profile) return <p style={{ padding: '30px' }}>Loading...</p>;
+
+  const hasSessionTypes = profile.sessionTypes?.length > 0;
 
   return (
     <div style={{ padding: '30px', fontFamily: 'Arial', maxWidth: '600px', margin: '0 auto' }}>
@@ -82,34 +91,43 @@ const BookAppointment = () => {
       <p>{profile.bio}</p>
       <p><strong>Price:</strong> ₹{profile.pricePerSession} / session</p>
 
-      <div style={{ marginTop: '20px' }}>
-        <label style={{ fontWeight: 'bold' }}>Select Session Type:</label>
-        <select
-          value={sessionType}
-          onChange={e => setSessionType(e.target.value)}
-          style={{
-            display: 'block',
-            marginTop: '8px',
-            padding: '10px',
-            width: '100%',
-            borderRadius: '6px',
-            border: '1px solid #ccc'
-          }}
-        >
-          {profile.sessionTypes?.map(type => (
-            <option key={type} value={type}>{type}</option>
-          ))}
-        </select>
-      </div>
+      {!hasSessionTypes ? (
+        <p style={{
+          backgroundColor: '#FED7D7', color: '#822727', padding: '12px 16px',
+          borderRadius: '6px', fontSize: '14px', marginTop: '20px'
+        }}>
+           This counselor hasn't set up session types yet. Booking is currently unavailable — please check back later.
+        </p>
+      ) : (
+        <div style={{ marginTop: '20px' }}>
+          <label style={{ fontWeight: 'bold' }}>Select Session Type:</label>
+          <select
+            value={sessionType}
+            onChange={e => setSessionType(e.target.value)}
+            style={{
+              display: 'block',
+              marginTop: '8px',
+              padding: '10px',
+              width: '100%',
+              borderRadius: '6px',
+              border: '1px solid #ccc'
+            }}
+          >
+            {profile.sessionTypes.map(type => (
+              <option key={type} value={type}>{type}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div style={{ marginTop: '20px' }}>
         <label style={{ fontWeight: 'bold' }}>Select Available Slot:</label>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '10px' }}>
-          {profile.availableSlots?.filter(s => !s.isBooked).map((slot, i) => (
+          {profile.availableSlots?.filter(s => !s.isBooked && s.date && s.time).map((slot, i) => (
             <button
               key={i}
               onClick={() => setSelectedSlot(slot)}
-              disabled={isBooking} 
+              disabled={isBooking}
               style={{
                 padding: '10px 16px',
                 borderRadius: '6px',
@@ -128,15 +146,15 @@ const BookAppointment = () => {
 
       <button
         onClick={handleBook}
-        disabled={isBooking} 
+        disabled={isBooking || !hasSessionTypes}
         style={{
           marginTop: '30px',
           padding: '12px 30px',
-          backgroundColor: isBooking ? '#a0aec0' : '#2C7A7B',
+          backgroundColor: (isBooking || !hasSessionTypes) ? '#a0aec0' : '#2C7A7B',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
-          cursor: isBooking ? 'not-allowed' : 'pointer',
+          cursor: (isBooking || !hasSessionTypes) ? 'not-allowed' : 'pointer',
           fontSize: '16px',
           width: '100%'
         }}
