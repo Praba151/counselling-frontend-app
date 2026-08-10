@@ -16,16 +16,65 @@ const CounselorDashboard = () => {
     API.get('/appointments/mine').then(res => setAppointments(res.data));
   }, []);
 
+ 
+  const validateSlots = (rawText) => {
+    const entries = rawText.split(',').map(s => s.trim()).filter(Boolean);
+
+    if (entries.length === 0) {
+      return { valid: false, error: 'Please add at least one available slot.' };
+    }
+
+    const datePattern = /^\d{4}-\d{2}-\d{2}$/;     
+    const timePattern = /^\d{2}:\d{2}$/;           
+
+    const slots = [];
+
+    for (const entry of entries) {
+      const parts = entry.split(' ').filter(Boolean);
+
+      if (parts.length !== 2) {
+        return {
+          valid: false,
+          error: `Invalid slot: "${entry}". Each slot needs a date AND a time, separated by a space (e.g. 2026-08-05 10:00).`
+        };
+      }
+
+      const [date, time] = parts;
+
+      if (!datePattern.test(date)) {
+        return {
+          valid: false,
+          error: `Invalid date in "${entry}". Use format YYYY-MM-DD (e.g. 2026-08-05).`
+        };
+      }
+
+      if (!timePattern.test(time)) {
+        return {
+          valid: false,
+          error: `Invalid time in "${entry}". Use 24-hour format HH:MM (e.g. 14:30).`
+        };
+      }
+
+      slots.push({ date, time });
+    }
+
+    return { valid: true, slots };
+  };
+
   const saveProfile = async () => {
+  
+    const result = validateSlots(profile.availableSlots);
+    if (!result.valid) {
+      alert(result.error);
+      return; 
+    }
+
     try {
       await API.post('/counselors/profile', {
         ...profile,
         expertise: profile.expertise.split(',').map(s => s.trim()),
         sessionTypes: profile.sessionTypes.split(',').map(s => s.trim()),
-        availableSlots: profile.availableSlots.split(',').map(slot => {
-          const [date, time] = slot.trim().split(' ');
-          return { date, time };
-        })
+        availableSlots: result.slots 
       });
       alert('Profile saved! ');
       setShowProfileForm(false);
@@ -74,8 +123,11 @@ const CounselorDashboard = () => {
             value={profile.sessionTypes} onChange={e => setProfile({ ...profile, sessionTypes: e.target.value })} style={inputStyle} />
           <input placeholder="Price per session (₹)" type="number"
             value={profile.pricePerSession} onChange={e => setProfile({ ...profile, pricePerSession: e.target.value })} style={inputStyle} />
-          <input placeholder="Available slots (e.g. 2025-01-15 10:00, 2025-01-16 14:00)"
+          <input placeholder="Available slots — format: YYYY-MM-DD HH:MM, e.g. 2026-08-05 10:00, 2026-08-06 14:00"
             value={profile.availableSlots} onChange={e => setProfile({ ...profile, availableSlots: e.target.value })} style={inputStyle} />
+          <p style={{ fontSize: '12px', color: '#888', marginTop: '-4px' }}>
+             Each slot must include both date and time, separated by a space. Time must be 24-hour format (e.g. 14:30, not 2:30 PM).
+          </p>
           <button onClick={saveProfile} style={{
             padding: '10px 24px', backgroundColor: '#38A169',
             color: 'white', border: 'none', borderRadius: '6px', cursor: 'pointer'

@@ -7,6 +7,7 @@ const BookAppointment = () => {
   const [profile, setProfile] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [sessionType, setSessionType] = useState('');
+  const [isBooking, setIsBooking] = useState(false); 
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,6 +23,10 @@ const BookAppointment = () => {
 
   const handleBook = async () => {
     if (!selectedSlot) return alert('Please select a time slot');
+    if (isBooking) return; 
+
+    setIsBooking(true); 
+
     try {
       const res = await API.post('/appointments/book', {
         counselorId: id,                         
@@ -52,6 +57,11 @@ const BookAppointment = () => {
           alert('Booking confirmed and payment successful!');
           navigate('/client-dashboard');
         },
+        modal: {
+          ondismiss: () => {
+            setIsBooking(false);
+          }
+        },
         prefill: { name: 'Client', email: 'client@example.com' },
         theme: { color: '#2C7A7B' }
       };
@@ -60,6 +70,7 @@ const BookAppointment = () => {
       rzp.open();
     } catch (err) {
       alert('Booking failed: ' + (err.response?.data?.message || err.message));
+      setIsBooking(false); 
     }
   };
 
@@ -98,13 +109,15 @@ const BookAppointment = () => {
             <button
               key={i}
               onClick={() => setSelectedSlot(slot)}
+              disabled={isBooking} 
               style={{
                 padding: '10px 16px',
                 borderRadius: '6px',
-                cursor: 'pointer',
+                cursor: isBooking ? 'not-allowed' : 'pointer',
                 backgroundColor: selectedSlot === slot ? '#2C7A7B' : 'white',
                 color: selectedSlot === slot ? 'white' : '#333',
-                border: '1px solid #2C7A7B'
+                border: '1px solid #2C7A7B',
+                opacity: isBooking ? 0.6 : 1
               }}
             >
               {slot.date} {slot.time}
@@ -115,19 +128,20 @@ const BookAppointment = () => {
 
       <button
         onClick={handleBook}
+        disabled={isBooking} 
         style={{
           marginTop: '30px',
           padding: '12px 30px',
-          backgroundColor: '#2C7A7B',
+          backgroundColor: isBooking ? '#a0aec0' : '#2C7A7B',
           color: 'white',
           border: 'none',
           borderRadius: '6px',
-          cursor: 'pointer',
+          cursor: isBooking ? 'not-allowed' : 'pointer',
           fontSize: '16px',
           width: '100%'
         }}
       >
-         Book & Pay ₹{profile.pricePerSession}
+        {isBooking ? 'Processing...' : `Book & Pay ₹${profile.pricePerSession}`}
       </button>
     </div>
   );
