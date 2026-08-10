@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import API from '../utils/api';
 
 const Register = () => {
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'client' });
+  const [form, setForm] = useState({ name: '', email: '', phone: '', password: '', role: 'client' });
   const [error, setError] = useState('');
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -35,6 +35,9 @@ const Register = () => {
         
         <input placeholder="Email" type="email" value={form.email}
           onChange={e => setForm({ ...form, email: e.target.value })} style={inputStyle} />
+
+        <input placeholder="Phone Number (e.g. 9876543210)" type="tel" value={form.phone}
+          onChange={e => setForm({ ...form, phone: e.target.value })} style={inputStyle} />
         
         <input placeholder="Password" type="password" value={form.password}
           onChange={e => setForm({ ...form, password: e.target.value })} style={inputStyle} />
