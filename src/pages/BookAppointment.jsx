@@ -51,14 +51,21 @@ const BookAppointment = () => {
         description: `Session: ${sessionType}`,
         order_id: orderRes.data.orderId,
         handler: async (response) => {
-          await API.post('/payment/verify', {
-            razorpayOrderId: response.razorpay_order_id,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpaySignature: response.razorpay_signature,
-            appointmentId: res.data._id
-          });
-          alert('Booking confirmed and payment successful!');
-          navigate('/client-dashboard');
+          try {
+            await API.post('/payment/verify', {
+              razorpayOrderId: response.razorpay_order_id,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpaySignature: response.razorpay_signature,
+              appointmentId: res.data._id
+            });
+            alert('Booking confirmed and payment successful!');
+            navigate('/client-dashboard');
+          } catch (verifyErr) {
+            console.error('Payment verify failed:', verifyErr.response?.data || verifyErr.message);
+            alert('Payment succeeded but confirmation failed: ' + (verifyErr.response?.data?.message || verifyErr.message));
+          } finally {
+            setIsBooking(false);
+          }
         },
         modal: {
           ondismiss: () => {
