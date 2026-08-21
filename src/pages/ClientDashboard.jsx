@@ -1,12 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import VideoCall from '../components/VideoCall';
 import API from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 
 const ClientDashboard = () => {
   const [appointments, setAppointments] = useState([]);
-  const [activeCallUrl, setActiveCallUrl] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -39,8 +37,8 @@ const ClientDashboard = () => {
               <h4 style={{ margin: '0 0 8px', color: '#333' }}>
                 Counselor: {appt.counselorId?.name}
               </h4>
-              <p style={{ margin: '4px 0', fontSize: '14px' }}>📅 {appt.date} at {appt.time}</p>
-              <p style={{ margin: '4px 0', fontSize: '14px' }}>🎯 {appt.sessionType}</p>
+              <p style={{ margin: '4px 0', fontSize: '14px' }}> {appt.date} at {appt.time}</p>
+              <p style={{ margin: '4px 0', fontSize: '14px' }}> {appt.sessionType}</p>
               <p style={{ margin: '4px 0', fontSize: '14px' }}>
                 Status: <span style={{ color: statusColor[appt.status], fontWeight: 'bold' }}>{appt.status}</span>
               </p>
@@ -56,7 +54,7 @@ const ClientDashboard = () => {
                     border: 'none', borderRadius: '6px', cursor: 'pointer'
                   }}
                 >
-                  💬 Chat
+                   Chat
                 </button>
 
                 {appt.videoRoomUrl ? (
@@ -85,12 +83,7 @@ const ClientDashboard = () => {
           ))}
         </div>
       )}
-      {activeCallUrl && (
-        <VideoCall
-          roomUrl={activeCallUrl}
-          onLeave={() => setActiveCallUrl(null)}
-        />
-      )}
+      
     </div>
   );
 };

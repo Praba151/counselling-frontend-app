@@ -47,7 +47,7 @@ const BookAppointment = () => {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: orderRes.data.amount,
         currency: 'INR',
-        name: 'MindBridge Counseling',
+        name: 'Counseling App',
         description: `Session: ${sessionType}`,
         order_id: orderRes.data.orderId,
         handler: async (response) => {

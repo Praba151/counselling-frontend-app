@@ -1,14 +1,12 @@
 import { useEffect, useState } from 'react';
 import API from '../utils/api';
 import { useAuth } from '../context/AuthContext';
-import VideoCall from '../components/VideoCall';
 import { useNavigate } from 'react-router-dom';
 
 const CounselorDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [profile, setProfile] = useState({ bio: '', expertise: '', sessionTypes: '', pricePerSession: 500, availableSlots: '' });
   const [showProfileForm, setShowProfileForm] = useState(false);
-  const [activeCallUrl, setActiveCallUrl] = useState(null);
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -179,7 +177,7 @@ const CounselorDashboard = () => {
                     border: 'none', borderRadius: '6px', cursor: 'not-allowed'
                   }}
                 >
-                  🎥 Join Call
+                   Join Call
                 </button>
               )}
 
@@ -196,12 +194,7 @@ const CounselorDashboard = () => {
           </div>
         ))
       )}
-      {activeCallUrl && (
-        <VideoCall
-          roomUrl={activeCallUrl}
-          onLeave={() => setActiveCallUrl(null)}
-        />
-      )}
+      
     </div>
   );
 };

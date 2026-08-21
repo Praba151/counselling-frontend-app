@@ -10,7 +10,6 @@ const Home = () => {
   useEffect(() => {
     API.get('/counselors')
       .then(res => {
-        console.log(res.data);
         setCounselors(res.data);
       })
       .catch(() => {})

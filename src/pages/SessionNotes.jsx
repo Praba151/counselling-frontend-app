@@ -69,7 +69,7 @@ const SessionNotes = () => {
               <a href={`${import.meta.env.VITE_API_URL.replace('/api', '')}/uploads/${note.fileAttachment}`}
                 target="_blank" rel="noreferrer"
                 style={{ color: '#2C7A7B', fontSize: '13px' }}>
-                📎 View Attachment
+                 View Attachment
               </a>
             )}
             <p style={{ fontSize: '12px', color: '#999', marginTop: '8px' }}>
