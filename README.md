@@ -49,3 +49,13 @@ Once payment succeeds:
 - Client Dashboard: shows all their appointments, status, and payment status
 - Counselor Dashboard: shows all appointments, lets them confirm/cancel sessions, and edit their profile
 
+### Demo credentials:
+  ## Client :
+  - Mail_id : prabakaranbaktha@gmail.com
+  - Password : praba098
+
+  ## Counsellor :
+  - Mail_id : siddharth@gmail.com
+  - Password : siddharth123
+
+
