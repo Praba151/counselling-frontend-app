@@ -36,7 +36,7 @@ function App() {
 
         <Route path="/counselor/:id" element={<CounselorProfile />} />
         <Route path="/session-notes/:appointmentId" element={
-          <ProtectedRoute role="counselor"><SessionNotes /></ProtectedRoute>
+          <ProtectedRoute><SessionNotes /></ProtectedRoute>
         } />
         <Route path="/chat/:appointmentId" element={
           <ProtectedRoute><ChatPage /></ProtectedRoute>

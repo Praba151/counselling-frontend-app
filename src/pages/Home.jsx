@@ -1,84 +1,144 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import API from '../utils/api';
+import { useAuth } from '../context/AuthContext';
+
+const PRIMARY = '#2C7A7B';
+const MUTED = '#6B7280';
+const BORDER = '#E2E8F0';
+
+const getPhotoUrl = (filename) => {
+  if (!filename) return null;
+  const base = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace('/api', '');
+  return `${base}/uploads/${filename}`;
+};
+
+const getInitials = (name = '') =>
+  name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || '?';
 
 const Home = () => {
   const [counselors, setCounselors] = useState([]);
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
     API.get('/counselors')
-      .then(res => {
-        setCounselors(res.data);
-      })
+      .then(res => setCounselors(res.data))
       .catch(() => {})
-      .finally(() => setLoading(false)); 
+      .finally(() => setLoading(false));
   }, []);
 
   return (
-    <div style={{ padding: '30px', fontFamily: 'Arial' }}>
-      <div style={{ textAlign: 'center', marginBottom: '40px' }}>
-        <h1 style={{ color: '#2C7A7B', fontSize: '32px' }}>Welcome to counselling service </h1>
-        <p style={{ color: '#555', fontSize: '16px' }}>Connect with licensed counselors for mental health, relationships & career</p>
+    <div style={{ padding: '32px 24px', maxWidth: '1100px', margin: '0 auto', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
+      
+      {user?.role === 'client' && (
+        <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+          <button onClick={() => navigate('/client-dashboard')} style={{
+            padding: '8px 16px', borderRadius: '8px', border: `1px solid ${PRIMARY}`,
+            background: '#fff', color: PRIMARY, fontWeight: 600, fontSize: '13px', cursor: 'pointer'
+          }}>
+            ← Back to My Sessions
+          </button>
+        </div>
+      )}
+      {user?.role === 'counselor' && (
+        <div style={{ textAlign: 'right', marginBottom: '10px' }}>
+          <button onClick={() => navigate('/counselor-dashboard')} style={{
+            padding: '8px 16px', borderRadius: '8px', border: `1px solid ${PRIMARY}`,
+            background: '#fff', color: PRIMARY, fontWeight: 600, fontSize: '13px', cursor: 'pointer'
+          }}>
+            ← Back to My Dashboard
+          </button>
+        </div>
+      )}
+      <div style={{ textAlign: 'center', marginBottom: '48px' }}>
+        <h1 style={{ fontSize: '34px', fontWeight: 700, color: '#1F2937' }}>Welcome to Counselling Services</h1>
+        <p style={{ color: MUTED, fontSize: '16px', marginTop: '8px' }}>
+          Connect with licensed counsellors for mental health, relationships & career support
+        </p>
       </div>
 
-      <h2 style={{ color: '#333', marginBottom: '20px' }}>Our Counselors</h2>
+      <h2 style={{ fontSize: '20px', fontWeight: 600, color: '#1F2937', marginBottom: '20px' }}>Our Counsellors</h2>
 
       {loading ? (
-        <p style={{ color: '#888' }}>Loading counselors...</p>
+        <p style={{ color: MUTED }}>Loading counsellors…</p>
       ) : counselors.length === 0 ? (
-        <p style={{ color: '#888' }}>No counselors available yet.</p>
+        <p style={{ color: MUTED }}>No counsellors available yet.</p>
       ) : (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '20px' }}>
-          {counselors.map((profile) => (
-            <div key={profile._id} style={{
-              border: '1px solid #ddd', borderRadius: '10px',
-              padding: '20px', backgroundColor: '#f9f9f9',
-              overflow: 'hidden',          
-              wordWrap: 'break-word',   
-              overflowWrap: 'break-word'
-            }}>
-              <h3 style={{
-                color: '#2C7A7B',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'         
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '24px' }}>
+          {counselors.map((profile) => {
+            const photoUrl = getPhotoUrl(profile.photoUrl);
+            const tags = [...new Set((profile.sessionTypes || []).map(t => t.trim()).filter(Boolean))];
+
+            return (
+              <div key={profile._id} style={{
+                background: '#fff', border: `1px solid ${BORDER}`, borderRadius: '12px',
+                padding: '24px', boxShadow: '0 1px 3px rgba(16,24,40,0.06)'
               }}>
-                {profile.userId?.name}
-              </h3>
-              <p style={{
-                color: '#555', fontSize: '14px',
-                display: '-webkit-box',
-                WebkitLineClamp: 3,           
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-                {profile.bio || 'No bio yet'}
-              </p>
-              <p style={{
-                fontSize: '13px',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap'          
-              }}>
-                <strong>Services:</strong> {profile.sessionTypes?.join(', ') || 'N/A'}
-              </p>
-              <p style={{ fontSize: '13px', color: '#2C7A7B', fontWeight: 'bold' }}>
-                ₹{profile.pricePerSession} / session
-              </p>
-              <button
-                onClick={() => navigate(`/book/${profile.userId?._id}`)}
-                style={{
-                  marginTop: '10px', padding: '8px 20px',
-                  backgroundColor: '#2C7A7B', color: 'white',
-                  border: 'none', borderRadius: '6px', cursor: 'pointer', width: '100%'
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
+                
+                  {photoUrl ? (
+                    <img src={photoUrl} alt={profile.userId?.name} style={{
+                      width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', flexShrink: 0
+                    }} />
+                  ) : (
+                    <div style={{
+                      width: 64, height: 64, borderRadius: '50%', flexShrink: 0,
+                      background: '#E6F4F3', color: PRIMARY, display: 'flex',
+                      alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '22px'
+                    }}>
+                      {getInitials(profile.userId?.name)}
+                    </div>
+                  )}
+                  <div style={{ minWidth: 0 }}>
+                    <h3 style={{
+                      margin: 0, color: '#1F2937', fontSize: '18px', fontWeight: 700,
+                      overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+                    }}>
+                      {profile.userId?.name}
+                    </h3>
+                    <p style={{ margin: '2px 0 0', color: PRIMARY, fontWeight: 700, fontSize: '15px' }}>
+                      ₹{profile.pricePerSession} <span style={{ color: MUTED, fontWeight: 400, fontSize: '13px' }}>/ session</span>
+                    </p>
+                  </div>
+                </div>
+
+                <p style={{
+                  color: MUTED, fontSize: '14px', margin: '0 0 10px',
+                  display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden', textOverflow: 'ellipsis'
                 }}>
-                Book Session
-              </button>
-            </div>
-          ))}
+                  {profile.bio || 'No bio yet'}
+                </p>
+
+      
+                {tags.length > 0 && (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', margin: '6px 0' }}>
+                    {tags.map(tag => (
+                      <span key={tag} style={{
+                        display: 'inline-block', background: '#E6F4F3', color: PRIMARY,
+                        fontSize: '12px', fontWeight: 600, padding: '4px 10px',
+                        borderRadius: '999px', marginRight: '6px', marginBottom: '6px'
+                      }}>
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <button
+                  onClick={() => navigate(`/book/${profile.userId?._id}`)}
+                  style={{
+                    width: '100%', marginTop: '14px', padding: '11px', background: PRIMARY,
+                    color: 'white', border: 'none', borderRadius: '8px', fontWeight: 600,
+                    fontSize: '14px', cursor: 'pointer'
+                  }}>
+                  Book Session
+                </button>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
