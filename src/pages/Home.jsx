@@ -16,6 +16,26 @@ const getPhotoUrl = (filename) => {
 const getInitials = (name = '') =>
   name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]?.toUpperCase()).join('') || '?';
 
+const CounselorAvatar = ({ name, photoUrl, size = 64 }) => {
+  const [broken, setBroken] = useState(false);
+  if (photoUrl && !broken) {
+    return (
+      <img src={photoUrl} alt={name} onError={() => setBroken(true)} style={{
+        width: size, height: size, borderRadius: '50%', objectFit: 'cover', flexShrink: 0
+      }} />
+    );
+  }
+  return (
+    <div style={{
+      width: size, height: size, borderRadius: '50%', flexShrink: 0,
+      background: '#E6F4F3', color: PRIMARY, display: 'flex',
+      alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: size * 0.34
+    }}>
+      {getInitials(name)}
+    </div>
+  );
+};
+
 const Home = () => {
   const [counselors, setCounselors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +51,6 @@ const Home = () => {
 
   return (
     <div style={{ padding: '32px 24px', maxWidth: '1100px', margin: '0 auto', fontFamily: "'Segoe UI', Arial, sans-serif" }}>
-      
       {user?.role === 'client' && (
         <div style={{ textAlign: 'right', marginBottom: '10px' }}>
           <button onClick={() => navigate('/client-dashboard')} style={{
@@ -77,20 +96,7 @@ const Home = () => {
                 padding: '24px', boxShadow: '0 1px 3px rgba(16,24,40,0.06)'
               }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '12px' }}>
-                
-                  {photoUrl ? (
-                    <img src={photoUrl} alt={profile.userId?.name} style={{
-                      width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', flexShrink: 0
-                    }} />
-                  ) : (
-                    <div style={{
-                      width: 64, height: 64, borderRadius: '50%', flexShrink: 0,
-                      background: '#E6F4F3', color: PRIMARY, display: 'flex',
-                      alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: '22px'
-                    }}>
-                      {getInitials(profile.userId?.name)}
-                    </div>
-                  )}
+                  <CounselorAvatar name={profile.userId?.name} photoUrl={photoUrl} size={64} />
                   <div style={{ minWidth: 0 }}>
                     <h3 style={{
                       margin: 0, color: '#1F2937', fontSize: '18px', fontWeight: 700,
@@ -112,7 +118,6 @@ const Home = () => {
                   {profile.bio || 'No bio yet'}
                 </p>
 
-      
                 {tags.length > 0 && (
                   <div style={{ display: 'flex', flexWrap: 'wrap', margin: '6px 0' }}>
                     {tags.map(tag => (
